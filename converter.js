@@ -6,7 +6,7 @@ var app=express();
 app.use(bodyParser.urlencoded({ extended: true })); 
 var pathofjson = path.join(__dirname,'myjsondata')
 var mydata = [];
-
+app.use(bodyParser.json());
 
 app.get('/',function(req,res){
 
@@ -15,15 +15,18 @@ app.get('/',function(req,res){
 app.post('/csvtojson',function(req,res){
 
   
+        console.log(JSON.stringify(req.body))
         fs.createReadStream(req.body.filename)
         .pipe(csv())
         .on('data', (row) => {
-          mydata.push(row)
-          
+          mydata.push(row);
+           
 
         })
         .on('end', () => {
-          res.json(mydata);
+          
+          
+          res.json(mydata)  
           fs.writeFileSync(pathofjson,JSON.stringify(mydata), function(err){
                
             console.log(err);
@@ -32,6 +35,7 @@ app.post('/csvtojson',function(req,res){
         });
      
 })
- 
+csv({ separator: '\t' });
+
  
 app.listen(8080);
